@@ -1,118 +1,87 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
 import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+import {StyleSheet, Text, View} from 'react-native';
+import {TPlant} from './src/types/plant.type';
+import {SunlightEnum} from './src/enums/sunlight.enum';
+import PlantCard from './src/components/PlantCard';
+import CreateNewCard from './src/components/CreateNewCard';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+const plants: TPlant[] = [
+  {
+    id: 1,
+    name: 'Peace Lily',
+    imageSrc:
+      'https://www.gardenersdream.co.uk/blog/wp-content/uploads/2021/06/peace-2.jpg',
+    feedFreq: {
+      summer: 14,
+      winter: 0,
+    },
+    waterFreq: {
+      summer: 4,
+      winter: 9,
+    },
+    sunlight: SunlightEnum.INDIRECT,
+  },
+  {
+    id: 2,
+    name: 'Spider Plant',
+    imageSrc:
+      'https://www.thespruce.com/thmb/pJlTxKPJKx9WqKiRM20V46z2_Uk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/spider-plants-chlorophytum-definition-1902773-01b-b3f60dce30a64c399d52b5538417cc7d.jpg',
+    feedFreq: {
+      summer: 7,
+      winter: 14,
+    },
+    waterFreq: {
+      summer: 3,
+      winter: 7,
+    },
+    sunlight: SunlightEnum.PART_SHADE,
+  },
+  {
+    id: 3,
+    name: 'Snake Plant',
+    imageSrc:
+      'https://media.houseandgarden.co.uk/photos/6736030759a56cf43ffed622/master/w_1600%2Cc_limit/517540986',
+    feedFreq: {
+      summer: 21,
+      winter: 30,
+    },
+    waterFreq: {
+      summer: 7,
+      winter: 14,
+    },
+    sunlight: SunlightEnum.FULL_SHADE,
+  },
+];
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+const App = () => {
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
+    <View style={styles.appView}>
+      <Text style={styles.title}>Planter 🪴</Text>
+
+      <View>
+        <CreateNewCard />
+        {plants.map(plant => (
+          <PlantCard key={plant.id} plant={plant} />
+        ))}
+      </View>
     </View>
   );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
-  );
-}
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
-  },
-  highlight: {
-    fontWeight: '700',
-  },
-});
+};
 
 export default App;
+
+const styles = StyleSheet.create({
+  appView: {
+    backgroundColor: '#f8f8f8',
+    height: '100%',
+    paddingVertical: 38,
+    paddingHorizontal: 24,
+  },
+
+  title: {
+    fontFamily: 'Poppins-Bold',
+    color: '#333333',
+    fontSize: 48,
+    marginBottom: 10,
+  },
+});
