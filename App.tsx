@@ -1,87 +1,71 @@
-import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import React, {createContext, useCallback, useEffect, useState} from 'react';
+import {
+  createStaticNavigation,
+  StaticParamList,
+} from '@react-navigation/native';
+import {createNativeStackNavigator} from '@react-navigation/native-stack';
+import Home from './src/routes/Home';
+import Details from './src/routes/Details';
 import {TPlant} from './src/types/plant.type';
-import {SunlightEnum} from './src/enums/sunlight.enum';
-import PlantCard from './src/components/PlantCard';
-import CreateNewCard from './src/components/CreateNewCard';
+import {connectToDatabase, createTable} from './src/db/db';
 
-const plants: TPlant[] = [
-  {
-    id: 1,
-    name: 'Peace Lily',
-    imageSrc:
-      'https://www.gardenersdream.co.uk/blog/wp-content/uploads/2021/06/peace-2.jpg',
-    feedFreq: {
-      summer: 14,
-      winter: 0,
-    },
-    waterFreq: {
-      summer: 4,
-      winter: 9,
-    },
-    sunlight: SunlightEnum.INDIRECT,
+type RootStackParamList = StaticParamList<typeof RootStack>;
+
+interface IPlantContext {
+  plants: TPlant[];
+  setPlants: (value: TPlant[]) => void;
+}
+
+const RootStack = createNativeStackNavigator({
+  initialRouteName: 'Home',
+  screenOptions: {
+    headerStyle: {backgroundColor: '#f8f8f8'},
   },
-  {
-    id: 2,
-    name: 'Spider Plant',
-    imageSrc:
-      'https://www.thespruce.com/thmb/pJlTxKPJKx9WqKiRM20V46z2_Uk=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/spider-plants-chlorophytum-definition-1902773-01b-b3f60dce30a64c399d52b5538417cc7d.jpg',
-    feedFreq: {
-      summer: 7,
-      winter: 14,
+  screens: {
+    Home: {
+      screen: Home,
+      options: {
+        headerShown: false,
+        title: 'Planter 🪴',
+      },
     },
-    waterFreq: {
-      summer: 3,
-      winter: 7,
-    },
-    sunlight: SunlightEnum.PART_SHADE,
+    Details: Details,
   },
-  {
-    id: 3,
-    name: 'Snake Plant',
-    imageSrc:
-      'https://media.houseandgarden.co.uk/photos/6736030759a56cf43ffed622/master/w_1600%2Cc_limit/517540986',
-    feedFreq: {
-      summer: 21,
-      winter: 30,
-    },
-    waterFreq: {
-      summer: 7,
-      winter: 14,
-    },
-    sunlight: SunlightEnum.FULL_SHADE,
-  },
-];
+});
+
+const Navigation = createStaticNavigation(RootStack);
+
+declare global {
+  namespace ReactNavigation {
+    interface RootParamList extends RootStackParamList {}
+  }
+}
+
+export const PlantContext = createContext<IPlantContext>(
+  null as unknown as IPlantContext,
+);
 
 const App = () => {
-  return (
-    <View style={styles.appView}>
-      <Text style={styles.title}>Planter 🪴</Text>
+  const loadData = useCallback(async () => {
+    try {
+      const db = await connectToDatabase();
+      await createTable(db);
+    } catch (error) {
+      console.error(error);
+    }
+  }, []);
 
-      <View>
-        <CreateNewCard />
-        {plants.map(plant => (
-          <PlantCard key={plant.id} plant={plant} />
-        ))}
-      </View>
-    </View>
+  useEffect(() => {
+    loadData();
+  }, [loadData]);
+
+  const [plants, setPlants] = useState<TPlant[]>([]);
+
+  return (
+    <PlantContext.Provider value={{plants, setPlants}}>
+      <Navigation />
+    </PlantContext.Provider>
   );
 };
 
 export default App;
-
-const styles = StyleSheet.create({
-  appView: {
-    backgroundColor: '#f8f8f8',
-    height: '100%',
-    paddingVertical: 38,
-    paddingHorizontal: 24,
-  },
-
-  title: {
-    fontFamily: 'Poppins-Bold',
-    color: '#333333',
-    fontSize: 48,
-    marginBottom: 10,
-  },
-});
