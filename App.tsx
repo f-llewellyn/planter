@@ -8,6 +8,7 @@ import Home from './src/routes/Home';
 import Details from './src/routes/Details';
 import {TPlant} from './src/types/plant.type';
 import {connectToDatabase, createTable} from './src/db/db';
+import Create from './src/routes/Create';
 
 type RootStackParamList = StaticParamList<typeof RootStack>;
 
@@ -30,6 +31,12 @@ const RootStack = createNativeStackNavigator({
       },
     },
     Details: Details,
+    Create: {
+      screen: Create,
+      options: {
+        title: 'Add new plant',
+      },
+    },
   },
 });
 

@@ -13,3 +13,13 @@ export type TPlant = {
   feedFreq: TFrequencey;
   sunlight: SunlightEnum;
 };
+
+export type TPlantFormFields = {
+  name: string;
+  imageSrc?: string;
+  winterWaterFreq: number;
+  summerWaterFreq: number;
+  winterFeedFreq: number;
+  summerFeedFreq: number;
+  sunlight: SunlightEnum;
+};

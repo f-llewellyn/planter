@@ -2,15 +2,11 @@ import React, {useCallback, useContext, useEffect} from 'react';
 import {SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
 import PlantCard from '../components/PlantCard';
 import CreateNewCard from '../components/CreateNewCard';
-import {useNavigation} from '@react-navigation/native';
-import {Button} from '@react-navigation/elements';
 import {PlantContext} from '../../App';
 import {getAllPlants} from '../db/plants';
 
 const Home = () => {
   const {plants, setPlants} = useContext(PlantContext);
-
-  const navigation = useNavigation();
 
   const loadPlantData = useCallback(async () => {
     try {
@@ -38,16 +34,6 @@ const Home = () => {
           <PlantCard key={plant.id} plant={plant} />
         ))}
       </View>
-
-      <Button
-        onPress={() =>
-          navigation.navigate('Details', {
-            itemId: 86,
-            otherParam: 'anything you want here',
-          })
-        }>
-        Go to details
-      </Button>
     </SafeAreaView>
   );
 };
