@@ -4,24 +4,33 @@ import PlantCard from '../components/PlantCard';
 import CreateNewCard from '../components/CreateNewCard';
 import {PlantContext} from '../../App';
 import {getAllPlants} from '../db/plants';
+import {useDBContext} from '../utils/hooks/useDBContext.hook';
 
 const Home = () => {
   const {plants, setPlants} = useContext(PlantContext);
+  const {db} = useDBContext();
 
   const loadPlantData = useCallback(async () => {
+    if (!db) {
+      return;
+    }
     try {
-      const data = await getAllPlants();
+      const data = await getAllPlants(db);
       console.log(data);
       setPlants(data);
     } catch (error) {
       console.error(error);
       throw Error('Failed to get plants');
     }
-  }, [setPlants]);
+  }, [setPlants, db]);
 
   useEffect(() => {
     loadPlantData();
   }, [loadPlantData]);
+
+  if (!db) {
+    return <Text>Connecting to DB</Text>;
+  }
 
   return (
     <SafeAreaView style={styles.appView}>

@@ -12,6 +12,7 @@ interface IProps {
   label?: string;
   options?: any[];
   defaultValue?: any;
+  numericField?: boolean;
 }
 
 const CustomFormInput = ({
@@ -21,6 +22,7 @@ const CustomFormInput = ({
   placeholder,
   label,
   options,
+  numericField,
 }: IProps) => {
   const {
     field: {value, onChange},
@@ -45,6 +47,7 @@ const CustomFormInput = ({
             placeholder={placeholder}
             value={value}
             onChangeText={onChange}
+            keyboardType={numericField ? 'numeric' : 'default'}
           />
         );
 
@@ -66,7 +69,9 @@ const CustomFormInput = ({
             labelField="label"
             valueField="value"
             value={value}
-            onChange={onChange}
+            onChange={(item: {label: string; value: string}) =>
+              onChange(item.value)
+            }
           />
         );
 
@@ -76,7 +81,9 @@ const CustomFormInput = ({
   };
 
   useEffect(() => {
-    console.log(error);
+    if (error) {
+      console.error(error);
+    }
   }, [error]);
 
   return (

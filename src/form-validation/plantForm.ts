@@ -1,6 +1,5 @@
 import {z, ZodType} from 'zod';
 import {TPlantFormFields} from '../types/plant.type';
-import {SunlightEnum} from '../enums/sunlight.enum';
 
 export const PlantFormSchema: ZodType<TPlantFormFields> = z
   .object({
@@ -10,7 +9,7 @@ export const PlantFormSchema: ZodType<TPlantFormFields> = z
     summerWaterFreq: z.coerce.number(),
     summerFeedFreq: z.coerce.number(),
     winterFeedFreq: z.coerce.number(),
-    sunlight: z.nativeEnum(SunlightEnum),
+    sunlight: z.string(),
   })
   .required({
     name: true,

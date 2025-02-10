@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import {
   Button,
   Keyboard,
@@ -19,17 +19,19 @@ import {zodResolver} from '@hookform/resolvers/zod';
 import {PlantFormSchema} from '../form-validation/plantForm';
 import {FormTypesEnum} from '../enums/formTypes.enum';
 import {sunlightOptions} from '../constants/sunligntData';
-import {TPlantFormFields} from '../types/plant.type';
+import {TPlant, TPlantFormFields} from '../types/plant.type';
 import {SunlightEnum} from '../enums/sunlight.enum';
+import {addPlant} from '../db/plants';
+import {useDBContext} from '../utils/hooks/useDBContext.hook';
 
 const Create = () => {
   const [isActive, setIsActive] = useState(false);
+  const {db} = useDBContext();
 
   const navigation = useNavigation();
-  const {control, setValue, getValues, handleSubmit} =
-    useForm<TPlantFormFields>({
-      resolver: zodResolver(PlantFormSchema),
-    });
+  const {control, handleSubmit} = useForm<TPlantFormFields>({
+    resolver: zodResolver(PlantFormSchema),
+  });
 
   const closeCamera = () => {
     setIsActive(false);
@@ -39,14 +41,44 @@ const Create = () => {
     navigation.setOptions({headerShown: !isActive});
   }, [navigation, isActive]);
 
-  const submit = () => {
-    const sunlight = getValues('sunlight');
-    setValue('sunlight', sunlight.value);
-  };
+  const onSubmit = useCallback(
+    async (data: TPlantFormFields) => {
+      if (!db) {
+        return;
+      }
+      try {
+        const {
+          name,
+          summerFeedFreq,
+          summerWaterFreq,
+          sunlight,
+          winterFeedFreq,
+          winterWaterFreq,
+          imageSrc,
+        } = data;
 
-  const onSubmit = async (data: TPlantFormFields) => {
-    console.log(JSON.stringify(data));
-  };
+        const plant: Omit<TPlant, 'id'> = {
+          name,
+          feedFreq: {
+            summer: summerFeedFreq,
+            winter: winterFeedFreq,
+          },
+          waterFreq: {
+            summer: summerWaterFreq,
+            winter: winterWaterFreq,
+          },
+          sunlight,
+          imageSrc: imageSrc ?? '',
+        };
+
+        await addPlant(db, plant);
+        navigation.navigate('Home');
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    [navigation, db],
+  );
 
   return (
     <>
@@ -92,13 +124,14 @@ const Create = () => {
                 name={'summerWaterFreq'}
                 control={control}
                 fieldType={FormTypesEnum.TEXT}
-                options={sunlightOptions}
+                numericField
               />
               <CustomFormInput
                 placeholder={'Winter'}
                 name={'winterWaterFreq'}
                 control={control}
                 fieldType={FormTypesEnum.TEXT}
+                numericField
               />
 
               <Text style={styles.sectionHeader}>Feed Frequencey (days):</Text>
@@ -107,12 +140,14 @@ const Create = () => {
                 name={'summerFeedFreq'}
                 control={control}
                 fieldType={FormTypesEnum.TEXT}
+                numericField
               />
               <CustomFormInput
                 placeholder={'Winter'}
                 name={'winterFeedFreq'}
                 control={control}
                 fieldType={FormTypesEnum.TEXT}
+                numericField
               />
               <Button title={'Submit'} onPress={handleSubmit(onSubmit)} />
             </ScrollView>

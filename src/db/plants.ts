@@ -1,9 +1,7 @@
 import {SQLiteDatabase} from 'react-native-sqlite-storage';
 import {TPlant} from '../types/plant.type';
-import {connectToDatabase} from './db';
 
-export const getAllPlants = async (): Promise<TPlant[]> => {
-  const db = await connectToDatabase();
+export const getAllPlants = async (db: SQLiteDatabase): Promise<TPlant[]> => {
   const selectQuery = `
             SELECT * FROM plants;
         `;
@@ -78,7 +76,10 @@ export const getPlantByIdPlants = async (
   }
 };
 
-export const addPlant = async (db: SQLiteDatabase, plant: TPlant) => {
+export const addPlant = async (
+  db: SQLiteDatabase,
+  plant: Omit<TPlant, 'id'>,
+) => {
   const insertQuery = `
         INSERT INTO plants (
         name,

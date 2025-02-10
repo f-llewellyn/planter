@@ -1,5 +1,3 @@
-import {SunlightEnum} from '../enums/sunlight.enum';
-
 type TFrequencey = {
   summer: number;
   winter: number;
@@ -11,7 +9,7 @@ export type TPlant = {
   imageSrc: string;
   waterFreq: TFrequencey;
   feedFreq: TFrequencey;
-  sunlight: SunlightEnum;
+  sunlight: string;
 };
 
 export type TPlantFormFields = {
@@ -21,5 +19,5 @@ export type TPlantFormFields = {
   summerWaterFreq: number;
   winterFeedFreq: number;
   summerFeedFreq: number;
-  sunlight: SunlightEnum;
+  sunlight: string;
 };
