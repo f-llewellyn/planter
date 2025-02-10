@@ -2,30 +2,35 @@ import React, {useCallback, useContext, useEffect} from 'react';
 import {SafeAreaView, StatusBar, StyleSheet, Text, View} from 'react-native';
 import PlantCard from '../components/PlantCard';
 import CreateNewCard from '../components/CreateNewCard';
-import {useNavigation} from '@react-navigation/native';
-import {Button} from '@react-navigation/elements';
 import {PlantContext} from '../../App';
 import {getAllPlants} from '../db/plants';
+import {useDBContext} from '../utils/hooks/useDBContext.hook';
 
 const Home = () => {
   const {plants, setPlants} = useContext(PlantContext);
-
-  const navigation = useNavigation();
+  const {db} = useDBContext();
 
   const loadPlantData = useCallback(async () => {
+    if (!db) {
+      return;
+    }
     try {
-      const data = await getAllPlants();
+      const data = await getAllPlants(db);
       console.log(data);
       setPlants(data);
     } catch (error) {
       console.error(error);
       throw Error('Failed to get plants');
     }
-  }, [setPlants]);
+  }, [setPlants, db]);
 
   useEffect(() => {
     loadPlantData();
   }, [loadPlantData]);
+
+  if (!db) {
+    return <Text>Connecting to DB</Text>;
+  }
 
   return (
     <SafeAreaView style={styles.appView}>
@@ -38,16 +43,6 @@ const Home = () => {
           <PlantCard key={plant.id} plant={plant} />
         ))}
       </View>
-
-      <Button
-        onPress={() =>
-          navigation.navigate('Details', {
-            itemId: 86,
-            otherParam: 'anything you want here',
-          })
-        }>
-        Go to details
-      </Button>
     </SafeAreaView>
   );
 };

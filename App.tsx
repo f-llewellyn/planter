@@ -8,6 +8,8 @@ import Home from './src/routes/Home';
 import Details from './src/routes/Details';
 import {TPlant} from './src/types/plant.type';
 import {connectToDatabase, createTable} from './src/db/db';
+import Create from './src/routes/Create';
+import {SQLiteDatabase} from 'react-native-sqlite-storage';
 
 type RootStackParamList = StaticParamList<typeof RootStack>;
 
@@ -30,6 +32,12 @@ const RootStack = createNativeStackNavigator({
       },
     },
     Details: Details,
+    Create: {
+      screen: Create,
+      options: {
+        title: 'Add new plant',
+      },
+    },
   },
 });
 
@@ -45,11 +53,16 @@ export const PlantContext = createContext<IPlantContext>(
   null as unknown as IPlantContext,
 );
 
+export const DBContext = createContext<{db: SQLiteDatabase | null}>({db: null});
+
 const App = () => {
+  const [database, setDatabase] = useState<SQLiteDatabase | null>(null);
+
   const loadData = useCallback(async () => {
     try {
       const db = await connectToDatabase();
       await createTable(db);
+      setDatabase(db);
     } catch (error) {
       console.error(error);
     }
@@ -62,9 +75,11 @@ const App = () => {
   const [plants, setPlants] = useState<TPlant[]>([]);
 
   return (
-    <PlantContext.Provider value={{plants, setPlants}}>
-      <Navigation />
-    </PlantContext.Provider>
+    <DBContext.Provider value={{db: database}}>
+      <PlantContext.Provider value={{plants, setPlants}}>
+        <Navigation />
+      </PlantContext.Provider>
+    </DBContext.Provider>
   );
 };
 

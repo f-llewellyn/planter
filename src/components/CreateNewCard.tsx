@@ -1,15 +1,21 @@
 import React from 'react';
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet, Text, TouchableOpacity} from 'react-native';
 import FontAwesome5 from '@react-native-vector-icons/fontawesome5';
+import {useNavigation} from '@react-navigation/native';
 
 const CreateNewCard = () => {
+  const navigation = useNavigation();
   return (
-    <View style={styles.card}>
-      <Text style={styles.cardText}>
-        <FontAwesome5 name="plus" iconStyle="solid" />
-      </Text>
-      <Text style={styles.cardText}>Add plant</Text>
-    </View>
+    <TouchableOpacity
+      style={styles.card}
+      onPress={() => navigation.navigate('Create')}>
+      <>
+        <Text style={styles.cardText}>
+          <FontAwesome5 name="plus" iconStyle="solid" />
+        </Text>
+        <Text style={styles.cardText}>Add plant</Text>
+      </>
+    </TouchableOpacity>
   );
 };
 
